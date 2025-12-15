@@ -18,8 +18,10 @@ a {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.4rem 1.5rem;     /* tunnare än tidigare */
-  background: #059669;        /* fin grön färg */
+  padding: 0.4rem 1.5rem;
+  /* tunnare än tidigare */
+  background: #059669;
+  /* fin grön färg */
   color: #f9fafb;
 }
 
