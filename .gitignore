@@ -1,0 +1,34 @@
+# Node dependencies
+node_modules/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+logs/
+*.log
+
+# Env/konfiguration med hemligheter
+.env
+.env.local
+.env.*.local
+
+# Bygg-/cache-filer (om du får sådana senare)
+dist/
+build/
+.cache/
+.tmp/
+
+# OS/Editor-filer
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# NPM/Yarn/PNPM lås (välj själv vilka du vill ha i repo)
+package-lock.json
+yarn.lock
+pnpm-lock.yaml

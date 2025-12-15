@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="sv">
+
+<head>
+    <meta charset="UTF-8">
+    <title>The Online Bookstore</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+    <header class="top-nav">
+        <div class="logo">The Online Bookstore</div>
+        <nav>
+            <a href="/">Home</a>
+            <a href="/books">Our Books</a>
+
+        </nav>
+        <div class="auth-links">
+            <% if (user) { %>
+                <span>Hi, <%= user.name %></span>
+                <form method="post" action="/auth/logout" style="display:inline;">
+                    <button type="submit" class="link-button">Log out</button>
+                </form>
+                <% } else { %>
+                    <a href="/auth/login">Log in</a>
+                    <a href="/auth/register">Register</a>
+                    <% } %>
+        </div>
+
+    </header>
+
+    <main>
+        <div class="page-content">
+            <%- body %>
+        </div>
+    </main>
+
+</body>
+
+</html>

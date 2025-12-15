@@ -1,0 +1,299 @@
+/* ====== Bas ====== */
+
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  margin: 0;
+  background: #f4f5fb;
+  color: #111827;
+}
+
+a {
+  color: inherit;
+}
+
+/* ====== Navbar / layout ====== */
+
+/* Smal grön navbar */
+.top-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.4rem 1.5rem;     /* tunnare än tidigare */
+  background: #059669;        /* fin grön färg */
+  color: #f9fafb;
+}
+
+/* Länkar i navbaren */
+.top-nav nav a,
+.top-nav .auth-links a,
+.top-nav .auth-links .link-button {
+  margin-left: 1rem;
+  text-decoration: none;
+  color: #ecfdf5;
+  font-size: 0.95rem;
+}
+
+.top-nav nav a:hover,
+.top-nav .auth-links a:hover,
+.top-nav .auth-links .link-button:hover {
+  color: #bbf7d0;
+}
+
+
+.link-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font: inherit;
+}
+
+/* Huvudinnehåll */
+
+.page-content {
+  padding: 3rem 1rem;
+  display: flex;
+  justify-content: center;
+}
+
+/* ====== Hero (startsida) ====== */
+
+.hero {
+  text-align: center;
+}
+
+.hero h1 {
+  font-size: 2.1rem;
+  margin-bottom: 2rem;
+}
+
+.hero-image {
+  max-width: 400px;
+  width: 80%;
+  height: auto;
+}
+
+/* ====== Kort + formulär‑kort ====== */
+
+.card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 1.5rem 1.25rem;
+  box-shadow: 0 20px 25px -20px rgba(15, 23, 42, 0.35);
+}
+
+/* ====== Formulär (register / login) ====== */
+
+.form-page {
+  width: 100%;
+  max-width: 480px;
+}
+
+.form-page h1 {
+  font-size: 2.2rem;
+  margin-bottom: 1.5rem;
+}
+
+.form-row {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1rem;
+}
+
+.form-row label {
+  font-size: 0.9rem;
+  margin-bottom: 0.25rem;
+  color: #4b5563;
+}
+
+.form-row input,
+.form-row select {
+  padding: 0.6rem 0.75rem;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  font-size: 0.95rem;
+}
+
+.form-row input:focus,
+.form-row select:focus {
+  outline: none;
+  border-color: #38bdf8;
+  box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.25);
+}
+
+.form-actions {
+  margin-top: 1.25rem;
+  text-align: right;
+}
+
+.form-actions button {
+  background: #2563eb;
+  color: #ffffff;
+  border: none;
+  padding: 0.6rem 1.4rem;
+  border-radius: 999px;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+.form-actions button:hover {
+  background: #1d4ed8;
+}
+
+/* Meddelanden */
+
+.form-errors {
+  list-style: none;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  background: #fee2e2;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+  font-size: 0.9rem;
+}
+
+.form-success {
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  background: #dcfce7;
+  color: #166534;
+  border: 1px solid #bbf7d0;
+  font-size: 0.9rem;
+}
+
+/* ====== Books‑sidan ====== */
+
+.books-page {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  background: transparent;
+}
+
+
+.books-page h1 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.books-filters {
+  margin-bottom: 1.5rem;
+}
+
+.page-size-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.chip {
+  border-radius: 999px;
+  border: 1px solid #d1d5db;
+  background: #ffffff;
+  padding: 0.2rem 0.8rem;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.chip-active {
+  background: #2563eb;
+  border-color: #2563eb;
+  color: #ffffff;
+}
+
+/* Lista med böcker */
+
+.book-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 0.75rem;
+}
+
+.book-card h3 {
+  margin-top: 0;
+  margin-bottom: 0.4rem;
+}
+
+.book-card p {
+  margin: 0.15rem 0;
+}
+
+/* Add to cart */
+
+.add-cart-form {
+  margin-top: 0.75rem;
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.qty-input {
+  width: 70px;
+  padding: 0.4rem 0.5rem;
+  border-radius: 8px 0 0 8px;
+  border: 1px solid #d1d5db;
+}
+
+.add-cart-form button {
+  background: #2563eb;
+  color: #ffffff;
+  border: none;
+  padding: 0.45rem 1rem;
+  border-radius: 0 8px 8px 0;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.add-cart-form button:hover {
+  background: #1d4ed8;
+}
+
+/* ====== Pagination ====== */
+
+.pagination {
+  margin-top: 1.5rem;
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.pagination a,
+.pagination span.page {
+  padding: 0.25rem 0.6rem;
+  border-radius: 6px;
+  text-decoration: none;
+  border: 1px solid #d1d5db;
+  color: #374151;
+  font-size: 0.9rem;
+}
+
+.pagination .current {
+  background: #2563eb;
+  color: #ffffff;
+  border-color: #2563eb;
+}
+
+.pagination a.disabled {
+  pointer-events: none;
+  opacity: 0.4;
+}
+
+/* ====== Enkla fel‑sidor ====== */
+
+.errors-page {
+  text-align: center;
+  padding: 3rem 1rem;
+}
+
+.debug-box {
+  background: #111827;
+  color: #f9fafb;
+  padding: 0.5rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  font-size: 0.8rem;
+  overflow-x: auto;
+}

@@ -1,0 +1,81 @@
+<section class="books-page">
+  <h1>Our Books</h1>
+
+  <form method="get" action="/books" class="books-filters card">
+    <div class="form-row">
+      <label for="subject">Select Subject</label>
+      <select id="subject" name="subject">
+        <option value="">All subjects</option>
+        <% subjects.forEach(function (s) { %>
+          <option value="<%= s %>" <%= (filters.subject === s ? 'selected' : '') %>><%= s %></option>
+        <% }); %>
+      </select>
+    </div>
+
+    <div class="form-row">
+      <label for="author">Search by Author</label>
+      <input id="author" name="author" type="text"
+             placeholder="Enter author name"
+             value="<%= filters.author %>">
+    </div>
+
+    <div class="form-row">
+      <label for="title">Search by Title</label>
+      <input id="title" name="title" type="text"
+             placeholder="Enter book title"
+             value="<%= filters.title %>">
+    </div>
+
+    <div class="form-actions">
+      <button type="submit">Apply filters</button>
+    </div>
+  </form>
+
+  <h2>Books</h2>
+
+  <% if (!books || books.length === 0) { %>
+    <p>No books found for the selected filters.</p>
+  <% } else { %>
+    <div class="book-list">
+      <% books.forEach(function (book) { %>
+        <article class="book-card card">
+          <h3><%= book.title %></h3>
+          <p><strong>Author:</strong> <%= book.author %></p>
+          <p><strong>ISBN:</strong> <%= book.isbn %></p>
+          <p><strong>Price:</strong> $<%= book.price %></p>
+          <p><strong>Subject:</strong> <%= book.subject %></p>
+
+          <form method="post" action="/cart/add" class="add-cart-form">
+            <input type="hidden" name="isbn" value="<%= book.isbn %>">
+            <input type="number" name="qty" min="1" value="1" class="qty-input">
+            <button type="submit">Add to Cart</button>
+          </form>
+        </article>
+      <% }); %>
+    </div>
+
+    <nav class="pagination">
+      <%
+        const baseQuery =
+          'subject=' + encodeURIComponent(filters.subject || '') +
+          '&author=' + encodeURIComponent(filters.author || '') +
+          '&title=' + encodeURIComponent(filters.title || '') +
+          '&pageSize=' + pageSize;
+      %>
+
+      <a href="/books?<%= baseQuery %>&page=<%= Math.max(1, page - 1) %>"
+         class="<%= page === 1 ? 'disabled' : '' %>">Previous</a>
+
+      <% for (let p = 1; p <= totalPages; p++) { %>
+        <% if (p === page) { %>
+          <span class="page current"><%= p %></span>
+        <% } else { %>
+          <a href="/books?<%= baseQuery %>&page=<%= p %>" class="page"><%= p %></a>
+        <% } %>
+      <% } %>
+
+      <a href="/books?<%= baseQuery %>&page=<%= Math.min(totalPages, page + 1) %>"
+         class="<%= page === totalPages ? 'disabled' : '' %>">Next</a>
+    </nav>
+  <% } %>
+</section>
