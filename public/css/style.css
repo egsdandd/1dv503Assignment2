@@ -297,3 +297,50 @@ a {
   font-size: 0.8rem;
   overflow-x: auto;
 }
+
+.cart-page {
+  width: 100%;
+  max-width: 900px;
+}
+
+.cart-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+
+.cart-table th,
+.cart-table td {
+  padding: 0.6rem 0.8rem;
+  text-align: left;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.cart-table thead {
+  background: #f9fafb;
+}
+
+.cart-table tbody tr:nth-child(even) {
+  background: #f3f4f6;
+}
+
+.cart-grand-total {
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-top: 1.5rem;
+}
+
+.checkout-button {
+  margin-top: 1rem;
+  background: #059669;
+  color: #ffffff;
+  border: none;
+  padding: 0.6rem 1.6rem;
+  border-radius: 999px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.checkout-button:hover {
+  background: #047857;
+}
