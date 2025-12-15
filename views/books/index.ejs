@@ -1,6 +1,10 @@
 <section class="books-page">
   <h1>Our Books</h1>
 
+  <% if (typeof message !== 'undefined' && message) { %>
+    <div class="alert alert-success"><%= message %></div>
+  <% } %>
+
   <form method="get" action="/books" class="books-filters card">
     <div class="form-row">
       <label for="subject">Select Subject</label>
@@ -47,6 +51,7 @@
 
           <form method="post" action="/cart/add" class="add-cart-form">
             <input type="hidden" name="isbn" value="<%= book.isbn %>">
+            <input type="hidden" name="title" value="<%= book.title %>">
             <input type="number" name="qty" min="1" value="1" class="qty-input">
             <button type="submit">Add to Cart</button>
           </form>

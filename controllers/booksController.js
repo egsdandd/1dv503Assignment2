@@ -27,6 +27,9 @@ export async function listBooks(req, res, next) {
 
         const totalPages = total === 0 ? 1 : Math.ceil(total / pageSize)
 
+        const message = req.session.message
+        delete req.session.message
+
         console.log('Rendering with data:', {
             subjectsCount: subjects.length,
             booksCount: rows.length,
@@ -43,7 +46,8 @@ export async function listBooks(req, res, next) {
             page,
             pageSize,
             total,
-            totalPages
+            totalPages,
+            message
         })
     } catch (err) {
         console.error('Error in listBooks:', err)

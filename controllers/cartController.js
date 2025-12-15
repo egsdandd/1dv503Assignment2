@@ -7,7 +7,7 @@ export async function addToCart(req, res, next) {
     }
 
     const userid = req.session.user.id
-    const { isbn, qty } = req.body
+    const { isbn, qty, title } = req.body
     const quantity = Math.max(1, parseInt(qty || '1', 10))
 
     // Finns redan i cart?
@@ -29,10 +29,8 @@ export async function addToCart(req, res, next) {
       )
     }
 
-
-    // Tillbaka till samma sida med samma filter (enkel variant)
-    // res.redirect(req.get('Referrer') || '/books')
-    // res.redirect('/book')
+    req.session.message = `"${title}" added to cart!`
+    res.redirect(req.get('Referrer') || '/books')
   } catch (err) {
     next(err)
   }
