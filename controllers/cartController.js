@@ -98,12 +98,12 @@ export async function checkout(req, res, next) {
               c.qty,
               b.title,
               b.price,
-              m.address   AS street,
+              m.adress    AS street,
               m.city      AS city,
-              m.zipCode   AS zip
+              m.zip       AS zip
        FROM cart c
        JOIN books b   ON b.isbn = c.isbn
-       JOIN members m ON m.id   = c.userid
+       JOIN members m ON m.userid = c.userid
        WHERE c.userid = ?`,
       [userid]
     )
@@ -113,12 +113,12 @@ export async function checkout(req, res, next) {
       return res.redirect('/cart')
     }
 
-    const orderDate    = new Date()
+    const orderDate = new Date()
     const deliveryDate = new Date(orderDate.getTime() + 7 * 24 * 60 * 60 * 1000) // +7 dagar
 
-    // 2. Skapa order-rad i "order" (orders)
+    // 2. Skapa order-rad i orders
     const [orderResult] = await req.db.execute(
-      `INSERT INTO \`order\` (userid, order_date, shippedAddress, shippedCity, shippedZipCode)
+      `INSERT INTO orders (userid, created, shipAddress, shipCity, shipZip)
        VALUES (?, ?, ?, ?, ?)`,
       [
         userid,
@@ -129,43 +129,38 @@ export async function checkout(req, res, next) {
       ]
     )
 
-    const orderId = orderResult.insertId
+    const ono = orderResult.insertId
 
     // 3. Skapa order_details-rader
-    const detailsValues = rows.map(row => [
-      orderId,
-      row.isbn,
-      row.qty,
-      row.price * row.qty
-    ])
-
-    await req.db.execute(
-      `INSERT INTO order_details (orderid, isbn, qty, amount)
-       VALUES ?`,
-      [detailsValues]
-    )
+    for (const row of rows) {
+      await req.db.execute(
+        `INSERT INTO odetails (ono, isbn, qty, amount)
+         VALUES (?, ?, ?, ?)`,
+        [ono, row.isbn, row.qty, row.price * row.qty]
+      )
+    }
 
     // 4. Töm cart för användaren
     await req.db.execute('DELETE FROM cart WHERE userid = ?', [userid])
 
     // 5. Bygg data för invoice-vyn
     const items = rows.map(row => ({
-      isbn:   row.isbn,
-      title:  row.title,
-      price:  row.price,
-      qty:    row.qty,
-      total:  row.price * row.qty
+      isbn: row.isbn,
+      title: row.title,
+      price: row.price,
+      qty: row.qty,
+      total: row.price * row.qty
     }))
     const grandTotal = items.reduce((sum, i) => sum + i.total, 0)
 
     res.render('cart/invoice', {
-      orderId,
+      orderId: ono,
       orderDate,
       deliveryDate,              // visas bara, lagras inte
       address: {
         street: rows[0].street,
-        city:   rows[0].city,
-        zip:    rows[0].zip
+        city: rows[0].city,
+        zip: rows[0].zip
       },
       items,
       grandTotal

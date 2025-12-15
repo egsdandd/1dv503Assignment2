@@ -1,38 +1,46 @@
 <section class="cart-page card">
   <h1>Shopping Cart</h1>
 
-  <% if (!items || items.length === 0) { %>
+  <% if (!items || items.length===0) { %>
     <p>Your cart is empty.</p>
-  <% } else { %>
-    <table class="cart-table">
-      <thead>
-        <tr>
-          <th>ISBN</th>
-          <th>Title</th>
-          <th>$</th>
-          <th>Quantity</th>
-          <th>Total</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% items.forEach(function (item) { %>
+    <% } else { %>
+      <table class="cart-table">
+        <thead>
           <tr>
-            <td><%= item.isbn %></td>
-            <td><%= item.title %></td>
-            <td>$<%= item.price.toFixed(2) %></td>
-            <td><%= item.qty %></td>
-            <td>$<%= item.total.toFixed(2) %></td>
+            <th>ISBN</th>
+            <th>Title</th>
+            <th>$</th>
+            <th>Quantity</th>
+            <th>Total</th>
           </tr>
-        <% }); %>
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          <% items.forEach(function (item) { %>
+            <tr>
+              <td>
+                <%= item.isbn %>
+              </td>
+              <td>
+                <%= item.title %>
+              </td>
+              <td>$<%= item.price.toFixed(2) %>
+              </td>
+              <td>
+                <%= item.qty %>
+              </td>
+              <td>$<%= item.total.toFixed(2) %>
+              </td>
+            </tr>
+            <% }); %>
+        </tbody>
+      </table>
 
-    <p class="cart-grand-total">
-      Total: $<%= grandTotal.toFixed(2) %>
-    </p>
+      <p class="cart-grand-total">
+        Total: $<%= grandTotal.toFixed(2) %>
+      </p>
 
-    <form method="post" action="/checkout">
-      <button type="submit" class="checkout-button">Checkout</button>
-    </form>
-  <% } %>
+      <form method="post" action="/cart/checkout">
+        <button type="submit" class="checkout-button">Checkout</button>
+      </form>
+      <% } %>
 </section>
