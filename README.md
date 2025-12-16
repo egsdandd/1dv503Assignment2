@@ -1,6 +1,7 @@
-# Projektbedömning
+Author: Dan-Håkan Davall
+email: dd222mk@lnu.se
+phone: 070 640 9583
 
----
 ## 🛠 Setup
 
 1. Kopiera config-filen:
