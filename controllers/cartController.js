@@ -1,168 +1,133 @@
 // controllers/cartController.js
+import { ROUTES } from '../config/constants.js'
+import {
+  getCartItem,
+  addItemToCart,
+  updateCartItemQuantity,
+  getCartWithDetails,
+  getCartWithUserDetails,
+  createOrder,
+  createOrderDetail,
+  clearCart
+} from '../models/cartModel.js'
 
 export async function addToCart(req, res, next) {
   try {
     if (!req.session.user) {
-      return res.redirect('/auth/login')
+      return res.redirect(ROUTES.LOGIN)
     }
 
-    const userid = req.session.user.id
+    const userId = req.session.user.id
     const { isbn, qty, title } = req.body
     const quantity = Math.max(1, parseInt(qty || '1', 10))
 
-    // Finns redan i cart?
-    const [rows] = await req.db.execute(
-      'SELECT qty FROM cart WHERE userid = ? AND isbn = ?',
-      [userid, isbn]
-    )
+    const existingItem = await getCartItem(req.db, userId, isbn)
 
-    if (rows.length === 0) {
-      await req.db.execute(
-        'INSERT INTO cart (userid, isbn, qty) VALUES (?, ?, ?)',
-        [userid, isbn, quantity]
-      )
+    if (!existingItem) {
+      await addItemToCart(req.db, userId, isbn, quantity)
     } else {
-      const newQty = rows[0].qty + quantity
-      await req.db.execute(
-        'UPDATE cart SET qty = ? WHERE userid = ? AND isbn = ?',
-        [newQty, userid, isbn]
-      )
+      const newQuantity = existingItem.qty + quantity
+      await updateCartItemQuantity(req.db, userId, isbn, newQuantity)
     }
 
     req.session.message = `"${title}" added to cart!`
-    res.redirect(req.get('Referrer') || '/books')
+    res.redirect(req.get('Referrer') || ROUTES.BOOKS)
   } catch (err) {
     next(err)
   }
 }
 
-// Visa kundvagn
+function mapCartItems(rows) {
+  return rows.map(row => ({
+    isbn: row.isbn,
+    title: row.title,
+    price: row.price,
+    qty: row.qty,
+    total: row.price * row.qty
+  }))
+}
+
+function calculateGrandTotal(items) {
+  return items.reduce((sum, item) => sum + item.total, 0)
+}
+
 export async function viewCart(req, res, next) {
   try {
     if (!req.session.user) {
-      return res.redirect('/auth/login');
+      return res.redirect(ROUTES.LOGIN)
     }
 
-    const userid = req.session.user.id;
+    const userId = req.session.user.id
+    const rows = await getCartWithDetails(req.db, userId)
+    const items = mapCartItems(rows)
+    const grandTotal = calculateGrandTotal(items)
 
-    // Hämta cart-rader + bokinfo
-    const [rows] = await req.db.execute(
-      `SELECT c.isbn,
-              c.qty,
-              b.title,
-              b.price
-       FROM cart c
-       JOIN books b ON b.isbn = c.isbn
-       WHERE c.userid = ?`,
-      [userid]
-    );
-
-    const items = rows.map(row => ({
-      isbn: row.isbn,
-      title: row.title,
-      price: row.price,
-      qty: row.qty,
-      total: row.price * row.qty
-    }));
-
-    const grandTotal = items.reduce((sum, item) => sum + item.total, 0);
-
-    res.render('cart/index', { items, grandTotal });
+    res.render('cart/index', { items, grandTotal })
   } catch (err) {
-    next(err);
+    next(err)
   }
 }
 
-/*
-export async function viewCart(req, res, next) {
-  try {
-    res.send('VIEW CART OK');
-  } catch (err) {
-    next(err);
+function formatOrderDate(date) {
+  return date.toISOString().slice(0, 10)
+}
+
+function calculateDeliveryDate(orderDate, deliveryDays) {
+  const MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000
+  return new Date(orderDate.getTime() + deliveryDays * MILLISECONDS_PER_DAY)
+}
+
+async function createOrderDetails(db, orderNumber, cartItems) {
+  for (const item of cartItems) {
+    await createOrderDetail(db, orderNumber, item.isbn, item.qty, item.price * item.qty)
   }
 }
-*/
+
+function buildInvoiceData(orderNumber, orderDate, deliveryDate, cartItems) {
+  const items = mapCartItems(cartItems)
+  const grandTotal = calculateGrandTotal(items)
+
+  return {
+    orderId: orderNumber,
+    orderDate,
+    deliveryDate,
+    address: {
+      street: cartItems[0].street,
+      city: cartItems[0].city,
+      zip: cartItems[0].zip
+    },
+    items,
+    grandTotal
+  }
+}
+
 export async function checkout(req, res, next) {
   try {
     if (!req.session.user) {
-      return res.redirect('/auth/login')
+      return res.redirect(ROUTES.LOGIN)
     }
 
-    const userid = req.session.user.id
+    const userId = req.session.user.id
+    const cartItems = await getCartWithUserDetails(req.db, userId)
 
-    // 1. Hämta cart + bokinfo för användaren
-    const [rows] = await req.db.execute(
-      `SELECT c.isbn,
-              c.qty,
-              b.title,
-              b.price,
-              m.adress    AS street,
-              m.city      AS city,
-              m.zip       AS zip
-       FROM cart c
-       JOIN books b   ON b.isbn = c.isbn
-       JOIN members m ON m.userid = c.userid
-       WHERE c.userid = ?`,
-      [userid]
-    )
-
-    if (rows.length === 0) {
-      // tom cart → tillbaka till /cart
-      return res.redirect('/cart')
+    if (cartItems.length === 0) {
+      return res.redirect(ROUTES.CART)
     }
 
     const orderDate = new Date()
-    const deliveryDate = new Date(orderDate.getTime() + 7 * 24 * 60 * 60 * 1000) // +7 dagar
+    const deliveryDate = calculateDeliveryDate(orderDate, 7)
 
-    // 2. Skapa order-rad i orders
-    const [orderResult] = await req.db.execute(
-      `INSERT INTO orders (userid, created, shipAddress, shipCity, shipZip)
-       VALUES (?, ?, ?, ?, ?)`,
-      [
-        userid,
-        orderDate.toISOString().slice(0, 10),  // YYYY-MM-DD
-        rows[0].street,
-        rows[0].city,
-        rows[0].zip
-      ]
-    )
-
-    const ono = orderResult.insertId
-
-    // 3. Skapa order_details-rader
-    for (const row of rows) {
-      await req.db.execute(
-        `INSERT INTO odetails (ono, isbn, qty, amount)
-         VALUES (?, ?, ?, ?)`,
-        [ono, row.isbn, row.qty, row.price * row.qty]
-      )
-    }
-
-    // 4. Töm cart för användaren
-    await req.db.execute('DELETE FROM cart WHERE userid = ?', [userid])
-
-    // 5. Bygg data för invoice-vyn
-    const items = rows.map(row => ({
-      isbn: row.isbn,
-      title: row.title,
-      price: row.price,
-      qty: row.qty,
-      total: row.price * row.qty
-    }))
-    const grandTotal = items.reduce((sum, i) => sum + i.total, 0)
-
-    res.render('cart/invoice', {
-      orderId: ono,
-      orderDate,
-      deliveryDate,              // visas bara, lagras inte
-      address: {
-        street: rows[0].street,
-        city: rows[0].city,
-        zip: rows[0].zip
-      },
-      items,
-      grandTotal
+    const orderNumber = await createOrder(req.db, userId, formatOrderDate(orderDate), {
+      street: cartItems[0].street,
+      city: cartItems[0].city,
+      zip: cartItems[0].zip
     })
+
+    await createOrderDetails(req.db, orderNumber, cartItems)
+    await clearCart(req.db, userId)
+
+    const invoiceData = buildInvoiceData(orderNumber, orderDate, deliveryDate, cartItems)
+    res.render('cart/invoice', invoiceData)
   } catch (err) {
     next(err)
   }

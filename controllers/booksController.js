@@ -1,34 +1,45 @@
 // controllers/booksController.js
 import { getSubjects, getBooksPage } from '../models/booksModel.js'
+import { parsePositiveInteger, extractFilters, convertEmptyToNull } from '../utils/validators.js'
+import { PAGINATION_DEFAULTS } from '../config/constants.js'
+
+function calculateTotalPages(total, pageSize) {
+    return total === 0 ? 1 : Math.ceil(total / pageSize)
+}
+
+function extractAndClearSessionMessage(session) {
+    const message = session.message
+    delete session.message
+    return message
+}
+
+function buildFilterParams(filters) {
+    return {
+        subject: convertEmptyToNull(filters.subject),
+        author: convertEmptyToNull(filters.author),
+        title: convertEmptyToNull(filters.title)
+    }
+}
 
 export async function listBooks(req, res, next) {
     console.log('=== listBooks CALLED ===')
     try {
-        const subject = req.query.subject || ''
-        const author = req.query.author || ''
-        const title = req.query.title || ''
-
-        const rawPage = Number.parseInt(req.query.page || '1', 10)
-        const rawPageSize = Number.parseInt(req.query.pageSize || '5', 10)
-
-        const page = Number.isNaN(rawPage) || rawPage < 1 ? 1 : rawPage
-        const pageSize = Number.isNaN(rawPageSize) || rawPageSize < 1 ? 5 : rawPageSize
+        const filters = extractFilters(req.query)
+        const page = parsePositiveInteger(req.query.page, PAGINATION_DEFAULTS.PAGE)
+        const pageSize = parsePositiveInteger(req.query.pageSize, PAGINATION_DEFAULTS.PAGE_SIZE)
 
         const subjects = await getSubjects(req.db)
         console.log('Subjects:', subjects)
 
+        const filterParams = buildFilterParams(filters)
         const { rows, total } = await getBooksPage(req.db, {
-            subject: subject || null,
-            author: author || null,
-            title: title || null,
+            ...filterParams,
             page,
             pageSize
         })
 
-        const totalPages = total === 0 ? 1 : Math.ceil(total / pageSize)
-
-        const message = req.session.message
-        delete req.session.message
+        const totalPages = calculateTotalPages(total, pageSize)
+        const message = extractAndClearSessionMessage(req.session)
 
         console.log('Rendering with data:', {
             subjectsCount: subjects.length,
@@ -42,7 +53,7 @@ export async function listBooks(req, res, next) {
         res.render('books/index', {
             subjects,
             books: rows,
-            filters: { subject, author, title },
+            filters,
             page,
             pageSize,
             total,
