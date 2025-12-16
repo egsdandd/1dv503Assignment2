@@ -34,6 +34,7 @@ function configureMiddleware(app, db) {
   })
 
   app.use(session({
+    name: process.env.SESSION_NAME || 'connect.sid',
     secret: process.env.SESSION_SECRET || SESSION_SECRET_FALLBACK,
     resave: false,
     saveUninitialized: false

@@ -1,6 +1,27 @@
 # Projektbedömning
 
 ---
+## 🛠 Setup
+
+1. Kopiera config-filen:
+
+~~~ bash
+cp .env.example .env
+~~~
+
+2. Fyll i dina värden i `.env`
+
+3. Installera dependencies:
+
+~~~ bash
+npm install
+~~~
+
+4. Starta servern:
+
+~~~ bash
+npm start
+~~~
 
 ## ✅ Uppfyllda krav
 
