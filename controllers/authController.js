@@ -74,6 +74,7 @@ export async function handleRegister(req, res, next) {
     if (errors.length > 0) {
       return res.status(400).render('auth/register', {
         errors,
+        success: null,
         values: extractRegisterValues(req.body)
       })
     }
@@ -89,6 +90,7 @@ export async function handleRegister(req, res, next) {
     if (err.code === 'ER_DUP_ENTRY') {
       return res.status(400).render('auth/register', {
         errors: ['Email is already registered.'],
+        success: null,
         values: req.body
       })
     }
