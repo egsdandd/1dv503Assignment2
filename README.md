@@ -77,3 +77,41 @@ Ja, ditt projekt **uppfyller alla krav i uppgiften**!
 ### Notera!!
 
 Eftersom Zip-code är en INT så kan det svenska sättet att skriva postnummer med mellanslag ge problem, dvs "XXX XX" måste skrivas "XXXXX"
+
+## 🚀 Förbättringsförslag
+
+### **Omedelbara förbättringar (Next Sprint)**
+- **Input sanitization**: Lägg till `xss` skydd på alla user inputs  
+- **Error handling**: Centraliserad error middleware för 500-fel  
+- **Loading states**: Spinners vid API-kall (sök, checkout)  
+- **Responsive design**: Mobilanpassa cart + checkout  
+
+### **Avancerade features (Framtida utveckling)**
+
+| Prioritet | Feature                                     | Poängsvärde |
+| --------- | ------------------------------------------- | ----------- |
+| ⭐⭐⭐       | Admin dashboard (order management)          | +15p        |
+| ⭐⭐⭐       | Email notifications (order confirmation)    | +10p        |
+| ⭐⭐        | Book reviews/ratings system                 | +8p         |
+| ⭐⭐        | Shopping cart persistence (session/cookies) | +5p         |
+| ⭐         | Image upload för böcker                     | +5p         |
+| ⭐         | Export orders to PDF                        | +3p         |
+
+
+### **Tekniska uppgraderingar**
+- **Docker**: Containerisera appen för enklare deployment  
+- **Jest coverage**: Lägg till coverage reports (>80% target)  
+- **ESLint/Prettier**: Kodstil automation  
+- **Rate limiting**: Skydda login/register endpoints  
+- **Database**: Lägg till indexes på `email`, `isbn` kolumner  
+
+### **TDD-fokus (Din styrka!)**
+
+Nästa steg för testning:
+npm test -- --coverage
+
+Target: 90% coverage på controllers + validators
+
+---
+
+**Utmärkt grund att bygga vidare på!** Du har redan proffs-nivå Clean Code och testning. 🏆
