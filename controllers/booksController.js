@@ -22,14 +22,14 @@ function buildFilterParams(filters) {
 }
 
 export async function listBooks(req, res, next) {
-    console.log('=== listBooks CALLED ===')
+    // console.log('=== listBooks CALLED ===')
     try {
         const filters = extractFilters(req.query)
         const page = parsePositiveInteger(req.query.page, PAGINATION_DEFAULTS.PAGE)
         const pageSize = parsePositiveInteger(req.query.pageSize, PAGINATION_DEFAULTS.PAGE_SIZE)
 
         const subjects = await getSubjects(req.db)
-        console.log('Subjects:', subjects)
+        // console.log('Subjects:', subjects)
 
         const filterParams = buildFilterParams(filters)
         const { rows, total } = await getBooksPage(req.db, {
@@ -40,15 +40,6 @@ export async function listBooks(req, res, next) {
 
         const totalPages = calculateTotalPages(total, pageSize)
         const message = extractAndClearSessionMessage(req.session)
-
-        console.log('Rendering with data:', {
-            subjectsCount: subjects.length,
-            booksCount: rows.length,
-            total,
-            page,
-            pageSize,
-            totalPages
-        })
 
         res.render('books/index', {
             subjects,

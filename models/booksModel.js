@@ -47,15 +47,7 @@ export async function getBooksPage (db, { subject, author, title, page, pageSize
     LIMIT ${limit} OFFSET ${offsetSafe}
   `
 
-  console.log('DEBUG getBooksPage', {
-    subject,
-    author,
-    title,
-    page,
-    pageSize,
-    offset: offsetSafe,
-    params
-  })
+
 
   const [rows] = await db.execute(dataSql, params)
 

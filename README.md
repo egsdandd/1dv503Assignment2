@@ -2,6 +2,10 @@ Author: Dan-Håkan Davall
 email: dd222mk@lnu.se
 phone: 070 640 9583
 
+## Applicationen
+
+![App Diagram](depend.png)
+
 ## 🛠 Setup
 
 1. Kopiera config-filen:
@@ -24,7 +28,11 @@ npm install
 npm start
 ~~~
 
+
+
 ## ✅ Uppfyllda krav
+
+Jag bad min AI kontrollera mot uppgiftens krav och skapa en rapport:
 
 ### **2.1 Main Page / Home Page**
 - Enkel startsida finns — [`home/index.ejs`](vscode-file://vscode-app/c:/Users/Danne/AppData/Local/Programs/Microsoft%20VS%20Code/resources/app/out/vs/code/electron-browser/workbench/workbench.html)  

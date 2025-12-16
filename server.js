@@ -47,7 +47,7 @@ function configureMiddleware(app, db) {
 
   if (process.env.NODE_ENV !== 'production') {
     app.use((req, res, next) => {
-      console.log('REQUEST', req.method, req.url)
+      // console.log('REQUEST', req.method, req.url)
       next()
     })
   }
