@@ -19,6 +19,7 @@ dist/
 build/
 .cache/
 .tmp/
+coverage/
 
 # OS/Editor-filer
 .DS_Store
