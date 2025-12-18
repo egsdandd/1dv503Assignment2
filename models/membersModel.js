@@ -9,7 +9,6 @@ export async function createMember (db, data) {
       (fname, lname, adress, city, zip, phone, email, password)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?)
   `
-
   const params = [
     data.firstName,
     data.lastName,

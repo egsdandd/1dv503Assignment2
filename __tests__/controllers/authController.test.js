@@ -246,6 +246,7 @@ describe('authController', () => {
             expect(res.status).toHaveBeenCalledWith(400)
             expect(res.render).toHaveBeenCalledWith('auth/register', {
                 errors: ['First and last name are required.'],
+                success: null,
                 values: expect.any(Object)
             })
         })
@@ -258,6 +259,7 @@ describe('authController', () => {
             expect(res.status).toHaveBeenCalledWith(400)
             expect(res.render).toHaveBeenCalledWith('auth/register', {
                 errors: ['Address and city are required.'],
+                success: null,
                 values: expect.any(Object)
             })
         })
@@ -270,6 +272,7 @@ describe('authController', () => {
             expect(res.status).toHaveBeenCalledWith(400)
             expect(res.render).toHaveBeenCalledWith('auth/register', {
                 errors: ['Invalid email.'],
+                success: null,
                 values: expect.any(Object)
             })
         })
@@ -281,8 +284,7 @@ describe('authController', () => {
 
             expect(res.status).toHaveBeenCalledWith(400)
             expect(res.render).toHaveBeenCalledWith('auth/register', {
-                errors: ['Password must be at least 6 characters.'],
-                values: expect.any(Object)
+                errors: ['Password must be at least 6 characters.'], success: null, values: expect.any(Object)
             })
         })
 
@@ -315,6 +317,7 @@ describe('authController', () => {
             expect(res.status).toHaveBeenCalledWith(400)
             expect(res.render).toHaveBeenCalledWith('auth/register', {
                 errors: ['Email is already registered.'],
+                success: null,
                 values: req.body
             })
         })

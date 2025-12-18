@@ -93,3 +93,16 @@ startServer().catch(err => {
   console.error('Failed to start server:', err)
   process.exit(1)
 })
+
+// Handle unhandled promise rejections
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Promise Rejection:', reason)
+  console.error('Promise:', promise)
+  process.exit(1)
+})
+
+// Handle uncaught exceptions
+process.on('uncaughtException', (err) => {
+  console.error('Uncaught Exception:', err)
+  process.exit(1)
+})
