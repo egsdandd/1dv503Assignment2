@@ -264,6 +264,45 @@ describe('authController', () => {
             })
         })
 
+        test('should render errors if zip code contains letters', async () => {
+            req.body.zip = '123ab'
+
+            await handleRegister(req, res, next)
+
+            expect(res.status).toHaveBeenCalledWith(400)
+            expect(res.render).toHaveBeenCalledWith('auth/register', {
+                errors: ['Zip code must contain only numbers.'],
+                success: null,
+                values: expect.any(Object)
+            })
+        })
+
+        test('should render errors if zip code is not 5 digits', async () => {
+            req.body.zip = '123'
+
+            await handleRegister(req, res, next)
+
+            expect(res.status).toHaveBeenCalledWith(400)
+            expect(res.render).toHaveBeenCalledWith('auth/register', {
+                errors: ['Zip code must be exactly 5 digits.'],
+                success: null,
+                values: expect.any(Object)
+            })
+        })
+
+        test('should accept zip code with spaces and remove them', async () => {
+            req.body.zip = '123 45'
+            bcryptHashSpy.mockResolvedValueOnce('hashedpassword')
+            mockDb.execute.mockResolvedValueOnce([{ insertId: 1 }])
+
+            await handleRegister(req, res, next)
+
+            expect(mockDb.execute).toHaveBeenCalledWith(
+                expect.stringContaining('INSERT INTO members'),
+                expect.arrayContaining(['12345']) // Space removed
+            )
+        })
+
         test('should render errors if email is invalid', async () => {
             req.body.email = 'invalid-email'
 

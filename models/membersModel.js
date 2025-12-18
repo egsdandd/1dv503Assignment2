@@ -1,8 +1,9 @@
 // models/membersModel.js
 import bcrypt from 'bcrypt'
 
-export async function createMember (db, data) {
+export async function createMember(db, data) {
   const passwordHash = await bcrypt.hash(data.password, 10)
+  const cleanZip = data.zip.toString().replace(/\s/g, '') // Remove spaces from zip
 
   const sql = `
     INSERT INTO members
@@ -14,7 +15,7 @@ export async function createMember (db, data) {
     data.lastName,
     data.address,
     data.city,
-    data.zip,
+    cleanZip,
     data.phone,
     data.email,
     passwordHash

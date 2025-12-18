@@ -22,8 +22,16 @@ export function validateRegisterInput(data) {
         errors.push('Address and city are required.')
     }
 
-    if (!zip || !validator.isPostalCode(zip + '', 'any')) {
-        errors.push('Invalid zip code.')
+    // Validate zip code: trim spaces and check if it's only digits
+    if (!zip) {
+        errors.push('Zip code is required.')
+    } else {
+        const cleanZip = zip.toString().replace(/\s/g, '') // Remove all spaces
+        if (!/^\d+$/.test(cleanZip)) {
+            errors.push('Zip code must contain only numbers.')
+        } else if (cleanZip.length !== 5) {
+            errors.push('Zip code must be exactly 5 digits.')
+        }
     }
 
     if (!phone) {
