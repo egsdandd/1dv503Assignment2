@@ -22,6 +22,17 @@ cp .env.example .env
 npm install
 ~~~
 
+**Dependencies:**
+- **express** - Web framework
+- **ejs** + **express-ejs-layouts** - Templating
+- **mysql2** - Database driver
+- **bcrypt** - Password hashing
+- **express-session** - Session management
+- **helmet** - Säkerhetsheaders (CSP, X-Frame-Options, etc.)
+- **express-xss-sanitizer** - Automatisk XSS-sanitering
+- **express-validator** - Input validering och sanitering
+- **dotenv** - Environment variables
+
 4. Starta servern:
 
 ~~~ bash
@@ -101,20 +112,24 @@ Ja, ditt projekt **uppfyller alla krav i uppgiften**!
 
 ### **Extra styrkor**
 - ✅ **Clean Code**: Refaktorerad kod med tydlig *separation of concerns*  
-- ✅ **Tester**: 41 enhetstester (går utöver kraven)  
-- ✅ **Validators**: Återanvändbara valideringsfunktioner  
+- ✅ **Tester**: 44 enhetstester (går utöver kraven)  
+- ✅ **Validators**: express-validator med automatisk sanitering
+- ✅ **XSS-skydd**: helmet + express-xss-sanitizer + express-validator
+- ✅ **Säkerhetsheaders**: CSP, X-Frame-Options, X-Content-Type-Options  
 
 ### Notera!!
 
 Eftersom Zip-code är en INT så kan det svenska sättet att skriva postnummer med mellanslag ge problem, dvs "XXX XX" måste skrivas "XXXXX". I dagsläget trimmas input och fixas till men om någon skriver in bokstäver kommer ett felmeddelande.
 
+
 ## 🚀 Förbättringsförslag
 
 ### **Omedelbara förbättringar (Next Sprint)**
-- **Input sanitization**: Lägg till `xss` skydd på alla user inputs  
-- **Error handling**: Centraliserad error middleware för 500-fel  
-- **Loading states**: Spinners vid API-kall (sök, checkout)  
-- **Responsive design**: Mobilanpassa cart + checkout  
+
+- ~~**Input sanitization**: Lägg till `xss` skydd på alla user inputs~~ ✅ **KLART**
+- ~~**XSS-skydd**: Implementera helmet + express-xss-sanitizer~~ ✅ **KLART**
+- **Loading states**: Spinners vid API-kall (sök, checkout)
+- **Responsive design**: Mobilanpassa cart + checkout
 
 ### **Avancerade features (Framtida utveckling)**
 
@@ -128,20 +143,40 @@ Eftersom Zip-code är en INT så kan det svenska sättet att skriva postnummer m
 | ⭐         | Export orders to PDF                        | +3p         |
 
 
+
 ### **Tekniska uppgraderingar**
+
 - **Docker**: Containerisera appen för enklare deployment  
 - **Jest coverage**: Lägg till coverage reports (>80% target)  
 - **ESLint/Prettier**: Kodstil automation  
 - **Rate limiting**: Skydda login/register endpoints  
 - **Database**: Lägg till indexes på `email`, `isbn` kolumner  
 
+### **Säkerhet implementerad**
+
+✅ **XSS-skydd** - Trelagers försvar:
+
+1. **helmet** - Säkerhetsheaders (CSP blockerar inline scripts)
+2. **express-xss-sanitizer** - Automatisk sanitering av ALL input
+3. **express-validator** - Validering + sanitering per field
+
+✅ **SQL Injection** - Parametized queries överallt
+
+✅ **Password Security** - bcrypt med salt rounds
+
+✅ **Session Security** - Säkra session cookies
+
 ### **TDD-fokus (Din styrka!)**
 
 Nästa steg för testning:
+
+```bash
 npm test -- --coverage
+```
 
 Target: 90% coverage på controllers + validators
 
 ---
 
 **Utmärkt grund att bygga vidare på!** Du har redan proffs-nivå Clean Code och testning. 🏆
+
