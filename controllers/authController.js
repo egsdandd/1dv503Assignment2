@@ -22,7 +22,7 @@ function renderLoginError(res, errors, email) {
 export async function handleLogin(req, res, next) {
   try {
     const errors = validationResult(req)
-    
+
     if (!errors.isEmpty()) {
       return renderLoginError(res, errors.array().map(e => e.msg), req.body.email || '')
     }

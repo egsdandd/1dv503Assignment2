@@ -70,7 +70,7 @@ describe('authController', () => {
 
         test('should render errors if email is missing', async () => {
             req.body.email = ''
-            
+
             mockValidationResult.mockReturnValue({
                 isEmpty: () => false,
                 array: () => [{ msg: 'Invalid email.' }]
@@ -88,7 +88,7 @@ describe('authController', () => {
 
         test('should render errors if password is missing', async () => {
             req.body.password = ''
-            
+
             mockValidationResult.mockReturnValue({
                 isEmpty: () => false,
                 array: () => [{ msg: 'Password is required.' }]
@@ -258,7 +258,7 @@ describe('authController', () => {
 
         test('should render errors if first or last name is missing', async () => {
             req.body.firstName = ''
-            
+
             mockValidationResult.mockReturnValue({
                 isEmpty: () => false,
                 array: () => [{ msg: 'First name is required.' }]
@@ -276,7 +276,7 @@ describe('authController', () => {
 
         test('should render errors if address or city is missing', async () => {
             req.body.address = ''
-            
+
             mockValidationResult.mockReturnValue({
                 isEmpty: () => false,
                 array: () => [{ msg: 'Address is required.' }]
@@ -294,7 +294,7 @@ describe('authController', () => {
 
         test('should render errors if zip code contains letters', async () => {
             req.body.zip = '123ab'
-            
+
             mockValidationResult.mockReturnValue({
                 isEmpty: () => false,
                 array: () => [{ msg: 'Zip code must contain only numbers.' }]
@@ -312,7 +312,7 @@ describe('authController', () => {
 
         test('should render errors if zip code is not 5 digits', async () => {
             req.body.zip = '123'
-            
+
             mockValidationResult.mockReturnValue({
                 isEmpty: () => false,
                 array: () => [{ msg: 'Zip code must be exactly 5 digits.' }]
@@ -330,7 +330,7 @@ describe('authController', () => {
 
         test('should accept zip code with spaces and remove them', async () => {
             req.body.zip = '123 45'
-            
+
             mockValidationResult.mockReturnValue({ isEmpty: () => true })
             bcryptHashSpy.mockResolvedValueOnce('hashedpassword')
             mockDb.execute.mockResolvedValueOnce([{ insertId: 1 }])
@@ -345,7 +345,7 @@ describe('authController', () => {
 
         test('should render errors if email is invalid', async () => {
             req.body.email = 'invalid-email'
-            
+
             mockValidationResult.mockReturnValue({
                 isEmpty: () => false,
                 array: () => [{ msg: 'Invalid email.' }]
@@ -363,7 +363,7 @@ describe('authController', () => {
 
         test('should render errors if password is too short', async () => {
             req.body.password = '123'
-            
+
             mockValidationResult.mockReturnValue({
                 isEmpty: () => false,
                 array: () => [{ msg: 'Password must be at least 6 characters.' }]

@@ -15,7 +15,7 @@ import {
 export async function addToCart(req, res, next) {
   try {
     const errors = validationResult(req)
-    
+
     if (!errors.isEmpty()) {
       req.session.message = errors.array()[0].msg
       return res.redirect(req.get('Referrer') || ROUTES.BOOKS)

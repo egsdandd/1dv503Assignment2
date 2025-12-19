@@ -30,7 +30,7 @@ function configureMiddleware(app, db) {
   // Security middleware
   app.use(helmet())
   app.use(xss())
-  
+
   app.use(express.urlencoded({ extended: false }))
   app.use(express.static(join(__dirname, 'public')))
 
