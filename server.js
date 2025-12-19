@@ -3,6 +3,8 @@ import express from 'express'
 import expressLayouts from 'express-ejs-layouts'
 import session from 'express-session'
 import dotenv from 'dotenv'
+import helmet from 'helmet'
+import { xss } from 'express-xss-sanitizer'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { createDbConnection } from './config/db.js'
@@ -25,6 +27,10 @@ function configureViewEngine(app) {
 }
 
 function configureMiddleware(app, db) {
+  // Security middleware
+  app.use(helmet())
+  app.use(xss())
+  
   app.use(express.urlencoded({ extended: false }))
   app.use(express.static(join(__dirname, 'public')))
 

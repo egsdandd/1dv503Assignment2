@@ -1,20 +1,25 @@
 // __tests__/controllers/authController.test.js
 import { jest } from '@jest/globals'
-import bcrypt from 'bcrypt'
-import {
-    showLoginForm,
-    handleLogin,
-    handleLogout,
-    showRegisterForm,
-    handleRegister
-} from '../../controllers/authController.js'
+
+// Mock express-validator BEFORE any imports
+const mockValidationResult = jest.fn()
+jest.unstable_mockModule('express-validator', () => ({
+    validationResult: mockValidationResult,
+    body: jest.fn()
+}))
+
+// Now import modules that depend on express-validator
+const bcrypt = await import('bcrypt')
+const authController = await import('../../controllers/authController.js')
+
+const { showLoginForm, handleLogin, handleLogout, showRegisterForm, handleRegister } = authController
 
 describe('authController', () => {
     let bcryptCompareSpy, bcryptHashSpy
 
     beforeAll(() => {
-        bcryptCompareSpy = jest.spyOn(bcrypt, 'compare')
-        bcryptHashSpy = jest.spyOn(bcrypt, 'hash')
+        bcryptCompareSpy = jest.spyOn(bcrypt.default, 'compare')
+        bcryptHashSpy = jest.spyOn(bcrypt.default, 'hash')
     })
 
     afterEach(() => {
@@ -65,12 +70,17 @@ describe('authController', () => {
 
         test('should render errors if email is missing', async () => {
             req.body.email = ''
+            
+            mockValidationResult.mockReturnValue({
+                isEmpty: () => false,
+                array: () => [{ msg: 'Invalid email.' }]
+            })
 
             await handleLogin(req, res, next)
 
             expect(res.status).toHaveBeenCalledWith(400)
             expect(res.render).toHaveBeenCalledWith('auth/login', {
-                errors: ['Email is required.'],
+                errors: ['Invalid email.'],
                 success: null,
                 values: { email: '' }
             })
@@ -78,6 +88,11 @@ describe('authController', () => {
 
         test('should render errors if password is missing', async () => {
             req.body.password = ''
+            
+            mockValidationResult.mockReturnValue({
+                isEmpty: () => false,
+                array: () => [{ msg: 'Password is required.' }]
+            })
 
             await handleLogin(req, res, next)
 
@@ -90,6 +105,7 @@ describe('authController', () => {
         })
 
         test('should render error if user not found', async () => {
+            mockValidationResult.mockReturnValue({ isEmpty: () => true })
             mockDb.execute.mockResolvedValueOnce([[]])
 
             await handleLogin(req, res, next)
@@ -103,6 +119,7 @@ describe('authController', () => {
         })
 
         test('should render error if password does not match', async () => {
+            mockValidationResult.mockReturnValue({ isEmpty: () => true })
             const mockUser = {
                 userid: 1,
                 email: 'test@example.com',
@@ -124,6 +141,7 @@ describe('authController', () => {
         })
 
         test('should set session and redirect on successful login', async () => {
+            mockValidationResult.mockReturnValue({ isEmpty: () => true })
             const mockUser = {
                 userid: 1,
                 email: 'test@example.com',
@@ -240,12 +258,17 @@ describe('authController', () => {
 
         test('should render errors if first or last name is missing', async () => {
             req.body.firstName = ''
+            
+            mockValidationResult.mockReturnValue({
+                isEmpty: () => false,
+                array: () => [{ msg: 'First name is required.' }]
+            })
 
             await handleRegister(req, res, next)
 
             expect(res.status).toHaveBeenCalledWith(400)
             expect(res.render).toHaveBeenCalledWith('auth/register', {
-                errors: ['First and last name are required.'],
+                errors: ['First name is required.'],
                 success: null,
                 values: expect.any(Object)
             })
@@ -253,12 +276,17 @@ describe('authController', () => {
 
         test('should render errors if address or city is missing', async () => {
             req.body.address = ''
+            
+            mockValidationResult.mockReturnValue({
+                isEmpty: () => false,
+                array: () => [{ msg: 'Address is required.' }]
+            })
 
             await handleRegister(req, res, next)
 
             expect(res.status).toHaveBeenCalledWith(400)
             expect(res.render).toHaveBeenCalledWith('auth/register', {
-                errors: ['Address and city are required.'],
+                errors: ['Address is required.'],
                 success: null,
                 values: expect.any(Object)
             })
@@ -266,6 +294,11 @@ describe('authController', () => {
 
         test('should render errors if zip code contains letters', async () => {
             req.body.zip = '123ab'
+            
+            mockValidationResult.mockReturnValue({
+                isEmpty: () => false,
+                array: () => [{ msg: 'Zip code must contain only numbers.' }]
+            })
 
             await handleRegister(req, res, next)
 
@@ -279,6 +312,11 @@ describe('authController', () => {
 
         test('should render errors if zip code is not 5 digits', async () => {
             req.body.zip = '123'
+            
+            mockValidationResult.mockReturnValue({
+                isEmpty: () => false,
+                array: () => [{ msg: 'Zip code must be exactly 5 digits.' }]
+            })
 
             await handleRegister(req, res, next)
 
@@ -292,6 +330,8 @@ describe('authController', () => {
 
         test('should accept zip code with spaces and remove them', async () => {
             req.body.zip = '123 45'
+            
+            mockValidationResult.mockReturnValue({ isEmpty: () => true })
             bcryptHashSpy.mockResolvedValueOnce('hashedpassword')
             mockDb.execute.mockResolvedValueOnce([{ insertId: 1 }])
 
@@ -305,6 +345,11 @@ describe('authController', () => {
 
         test('should render errors if email is invalid', async () => {
             req.body.email = 'invalid-email'
+            
+            mockValidationResult.mockReturnValue({
+                isEmpty: () => false,
+                array: () => [{ msg: 'Invalid email.' }]
+            })
 
             await handleRegister(req, res, next)
 
@@ -318,6 +363,11 @@ describe('authController', () => {
 
         test('should render errors if password is too short', async () => {
             req.body.password = '123'
+            
+            mockValidationResult.mockReturnValue({
+                isEmpty: () => false,
+                array: () => [{ msg: 'Password must be at least 6 characters.' }]
+            })
 
             await handleRegister(req, res, next)
 
@@ -328,6 +378,7 @@ describe('authController', () => {
         })
 
         test('should create member and show success message', async () => {
+            mockValidationResult.mockReturnValue({ isEmpty: () => true })
             bcryptHashSpy.mockResolvedValueOnce('hashedpassword')
             mockDb.execute.mockResolvedValueOnce([{ insertId: 1 }])
 
@@ -346,6 +397,7 @@ describe('authController', () => {
         })
 
         test('should handle duplicate email error', async () => {
+            mockValidationResult.mockReturnValue({ isEmpty: () => true })
             bcryptHashSpy.mockResolvedValueOnce('hashedpassword')
             const error = new Error('Duplicate entry')
             error.code = 'ER_DUP_ENTRY'
@@ -362,6 +414,7 @@ describe('authController', () => {
         })
 
         test('should handle other errors', async () => {
+            mockValidationResult.mockReturnValue({ isEmpty: () => true })
             bcryptHashSpy.mockResolvedValueOnce('hashedpassword')
             const error = new Error('Database error')
             mockDb.execute.mockRejectedValueOnce(error)

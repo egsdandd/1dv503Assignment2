@@ -106,7 +106,7 @@ Ja, ditt projekt **uppfyller alla krav i uppgiften**!
 
 ### Notera!!
 
-Eftersom Zip-code är en INT så kan det svenska sättet att skriva postnummer med mellanslag ge problem, dvs "XXX XX" måste skrivas "XXXXX"
+Eftersom Zip-code är en INT så kan det svenska sättet att skriva postnummer med mellanslag ge problem, dvs "XXX XX" måste skrivas "XXXXX". I dagsläget trimmas input och fixas till men om någon skriver in bokstäver kommer ett felmeddelande.
 
 ## 🚀 Förbättringsförslag
 

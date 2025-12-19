@@ -1,8 +1,8 @@
 // controllers/authController.js
 import bcrypt from 'bcrypt'
+import { validationResult } from 'express-validator'
 import { createMember } from '../models/membersModel.js'
 import { findUserByEmail } from '../models/authModel.js'
-import { validateLoginInput, validateRegisterInput } from '../utils/validators.js'
 import { ROUTES } from '../config/constants.js'
 
 const INVALID_CREDENTIALS_MESSAGE = 'Invalid email or password.'
@@ -21,13 +21,13 @@ function renderLoginError(res, errors, email) {
 
 export async function handleLogin(req, res, next) {
   try {
-    const { email, password } = req.body
-    const errors = validateLoginInput(email, password)
-
-    if (errors.length > 0) {
-      return renderLoginError(res, errors, email)
+    const errors = validationResult(req)
+    
+    if (!errors.isEmpty()) {
+      return renderLoginError(res, errors.array().map(e => e.msg), req.body.email || '')
     }
 
+    const { email, password } = req.body
     const user = await findUserByEmail(req.db, email)
 
     if (!user) {
@@ -69,11 +69,11 @@ function extractRegisterValues(body) {
 
 export async function handleRegister(req, res, next) {
   try {
-    const errors = validateRegisterInput(req.body)
+    const errors = validationResult(req)
 
-    if (errors.length > 0) {
+    if (!errors.isEmpty()) {
       return res.status(400).render('auth/register', {
-        errors,
+        errors: errors.array().map(e => e.msg),
         success: null,
         values: extractRegisterValues(req.body)
       })
