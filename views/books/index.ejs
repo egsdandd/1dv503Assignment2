@@ -7,34 +7,72 @@
     </div>
     <% } %>
 
-      <form method="get" action="/books" class="books-filters card">
-        <div class="form-row">
-          <label for="subject">Select Subject</label>
-          <select id="subject" name="subject">
-            <option value="">All subjects</option>
-            <% subjects.forEach(function (s) { %>
-              <option value="<%= s %>" <%=(filters.subject===s ? 'selected' : '' ) %>><%= s %>
-              </option>
-              <% }); %>
-          </select>
-        </div>
+      <div class="books-filters card">
+        <form method="get" action="/books" class="filter-form">
+          <div class="form-row">
+            <label for="subject">Select Subject</label>
+            <select id="subject" name="subject">
+              <option value="">All subjects</option>
+              <% subjects.forEach(function (s) { %>
+                <option value="<%= s %>" <%=(filters.subject===s ? 'selected' : '' ) %>><%= s %>
+                </option>
+                <% }); %>
+            </select>
+          </div>
+          <input type="hidden" name="author" value="<%= filters.author %>">
+          <input type="hidden" name="title" value="<%= filters.title %>">
+          <input type="hidden" name="pageSize" value="<%= pageSize %>">
+          <button type="submit" class="filter-btn">Filter by Subject</button>
+        </form>
 
-        <div class="form-row">
-          <label for="author">Search by Author</label>
-          <input id="author" name="author" type="text" placeholder="Enter author name" value="<%= filters.author %>">
-        </div>
+        <form method="get" action="/books" class="filter-form">
+          <div class="form-row">
+            <label for="author">Search by Author</label>
+            <input id="author" name="author" type="text" placeholder="Enter author name" value="<%= filters.author %>">
+          </div>
+          <input type="hidden" name="subject" value="<%= filters.subject %>">
+          <input type="hidden" name="title" value="<%= filters.title %>">
+          <input type="hidden" name="pageSize" value="<%= pageSize %>">
+          <button type="submit" class="filter-btn">Search by Author</button>
+        </form>
 
-        <div class="form-row">
-          <label for="title">Search by Title</label>
-          <input id="title" name="title" type="text" placeholder="Enter book title" value="<%= filters.title %>">
-        </div>
+        <form method="get" action="/books" class="filter-form">
+          <div class="form-row">
+            <label for="title">Search by Title</label>
+            <input id="title" name="title" type="text" placeholder="Enter book title" value="<%= filters.title %>">
+          </div>
+          <input type="hidden" name="subject" value="<%= filters.subject %>">
+          <input type="hidden" name="author" value="<%= filters.author %>">
+          <input type="hidden" name="pageSize" value="<%= pageSize %>">
+          <button type="submit" class="filter-btn">Search by Title</button>
+        </form>
 
-        <div class="form-actions">
-          <button type="submit">Apply filters</button>
+        <div class="items-per-page">
+          <label>Items per page</label>
+          <% const baseQuery='subject=' + encodeURIComponent(filters.subject || '' ) + '&author=' +
+            encodeURIComponent(filters.author || '' ) + '&title=' + encodeURIComponent(filters.title || '' ); %>
+            <div class="page-size-buttons">
+              <% [2, 3, 5, 10, 20].forEach(function(size) { %>
+                <a href="/books?<%= baseQuery %>&pageSize=<%= size %>&page=1"
+                  class="page-size-btn <%= pageSize === size ? 'active' : '' %>">
+                  <%= size %>
+                </a>
+                <% }); %>
+            </div>
         </div>
-      </form>
+      </div>
 
       <h2>Books</h2>
+
+      <div class="books-header">
+        <% if (total> 0) { %>
+          <% const startItem=(page - 1) * pageSize + 1; %>
+            <% const endItem=Math.min(page * pageSize, total); %>
+              <p>Showing <%= startItem %>-<%= endItem %> of <%= total %> books</p>
+              <% } else { %>
+                <p>No books found</p>
+                <% } %>
+      </div>
 
       <% if (!books || books.length===0) { %>
         <p>No books found for the selected filters.</p>
@@ -68,27 +106,52 @@
           </div>
 
           <nav class="pagination">
-            <% const baseQuery='subject=' + encodeURIComponent(filters.subject || '' ) + '&author=' +
+            <% const paginationQuery='subject=' + encodeURIComponent(filters.subject || '' ) + '&author=' +
               encodeURIComponent(filters.author || '' ) + '&title=' + encodeURIComponent(filters.title || '' )
               + '&pageSize=' + pageSize; %>
 
-              <a href="/books?<%= baseQuery %>&page=<%= Math.max(1, page - 1) %>"
-                class="<%= page === 1 ? 'disabled' : '' %>">Previous</a>
+              <a href="/books?<%= paginationQuery %>&page=<%= Math.max(1, page - 1) %>"
+                class="pagination-btn <%= page === 1 ? 'disabled' : '' %>">
+                &laquo; Prev
+              </a>
 
-              <% for (let p=1; p <=totalPages; p++) { %>
-                <% if (p===page) { %>
-                  <span class="page current">
-                    <%= p %>
-                  </span>
-                  <% } else { %>
-                    <a href="/books?<%= baseQuery %>&page=<%= p %>" class="page">
-                      <%= p %>
-                    </a>
+              <% const maxPagesToShow=5; let startPage=Math.max(1, page - Math.floor(maxPagesToShow / 2)); let
+                endPage=Math.min(totalPages, startPage + maxPagesToShow - 1); if (endPage - startPage < maxPagesToShow -
+                1) { startPage=Math.max(1, endPage - maxPagesToShow + 1); } %>
+
+                <% if (startPage> 1) { %>
+                  <a href="/books?<%= paginationQuery %>&page=1" class="page-number">1</a>
+                  <% if (startPage> 2) { %>
+                    <span class="page-ellipsis">...</span>
                     <% } %>
                       <% } %>
 
-                        <a href="/books?<%= baseQuery %>&page=<%= Math.min(totalPages, page + 1) %>"
-                          class="<%= page === totalPages ? 'disabled' : '' %>">Next</a>
+                        <% for (let p=startPage; p <=endPage; p++) { %>
+                          <% if (p===page) { %>
+                            <span class="page-number current">
+                              <%= p %>
+                            </span>
+                            <% } else { %>
+                              <a href="/books?<%= paginationQuery %>&page=<%= p %>" class="page-number">
+                                <%= p %>
+                              </a>
+                              <% } %>
+                                <% } %>
+
+                                  <% if (endPage < totalPages) { %>
+                                    <% if (endPage < totalPages - 1) { %>
+                                      <span class="page-ellipsis">...</span>
+                                      <% } %>
+                                        <a href="/books?<%= paginationQuery %>&page=<%= totalPages %>"
+                                          class="page-number">
+                                          <%= totalPages %>
+                                        </a>
+                                        <% } %>
+
+                                          <a href="/books?<%= paginationQuery %>&page=<%= Math.min(totalPages, page + 1) %>"
+                                            class="pagination-btn <%= page === totalPages ? 'disabled' : '' %>">
+                                            Next &raquo;
+                                          </a>
           </nav>
           <% } %>
 </section>
