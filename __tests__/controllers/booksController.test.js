@@ -3,11 +3,9 @@ import { jest } from '@jest/globals'
 import { listBooks } from '../../controllers/booksController.js'
 
 describe('booksController', () => {
-  let consoleLogSpy, consoleErrorSpy
-
   beforeEach(() => {
-    consoleLogSpy = jest.spyOn(console, 'log').mockImplementation(() => { })
-    consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => { })
+    jest.spyOn(console, 'log').mockImplementation(() => { })
+    jest.spyOn(console, 'error').mockImplementation(() => { })
   })
 
   afterEach(() => {
@@ -26,25 +24,25 @@ describe('booksController', () => {
 
     test('should use default values when no query parameters provided', async () => {
       // Mock getSubjects query
-      mockDb.execute.mockResolvedValueOnce([[
-        { subject: 'Fiction' },
-        { subject: 'Science' },
-        { subject: 'History' }
-      ]])
+      mockDb.execute.mockResolvedValueOnce([
+        [{ subject: 'Fiction' }, { subject: 'Science' }, { subject: 'History' }]
+      ])
 
       // Mock count query (getBooksPage's first query)
       mockDb.execute.mockResolvedValueOnce([[{ total: 1 }]])
 
       // Mock getBooksPage data query
-      mockDb.execute.mockResolvedValueOnce([[
-        { isbn: '111', title: 'Book 1', author: 'Author 1', price: 10, subject: 'Fiction' }
-      ]])
+      mockDb.execute.mockResolvedValueOnce([
+        [{ isbn: '111', title: 'Book 1', author: 'Author 1', price: 10, subject: 'Fiction' }]
+      ])
 
       await listBooks(req, res, next)
 
       expect(res.render).toHaveBeenCalledWith('books/index', {
         subjects: ['Fiction', 'Science', 'History'],
-        books: [{ isbn: '111', title: 'Book 1', author: 'Author 1', price: 10, subject: 'Fiction' }],
+        books: [
+          { isbn: '111', title: 'Book 1', author: 'Author 1', price: 10, subject: 'Fiction' }
+        ],
         filters: { subject: '', author: '', title: '' },
         page: 1,
         pageSize: 5,
@@ -70,18 +68,21 @@ describe('booksController', () => {
       mockDb.execute.mockResolvedValueOnce([[{ total: 20 }]])
 
       // Mock data query
-      mockDb.execute.mockResolvedValueOnce([[
-        { isbn: '222', title: 'Test Book', author: 'John Doe', price: 15, subject: 'Fiction' }
-      ]])
+      mockDb.execute.mockResolvedValueOnce([
+        [{ isbn: '222', title: 'Test Book', author: 'John Doe', price: 15, subject: 'Fiction' }]
+      ])
 
       await listBooks(req, res, next)
 
-      expect(res.render).toHaveBeenCalledWith('books/index', expect.objectContaining({
-        page: 2,
-        pageSize: 10,
-        total: 20,
-        totalPages: 2
-      }))
+      expect(res.render).toHaveBeenCalledWith(
+        'books/index',
+        expect.objectContaining({
+          page: 2,
+          pageSize: 10,
+          total: 20,
+          totalPages: 2
+        })
+      )
     })
 
     test('should handle invalid page number and default to 1', async () => {
@@ -105,7 +106,10 @@ describe('booksController', () => {
 
       await listBooks(req, res, next)
 
-      expect(res.render).toHaveBeenCalledWith('books/index', expect.objectContaining({ pageSize: 5 }))
+      expect(res.render).toHaveBeenCalledWith(
+        'books/index',
+        expect.objectContaining({ pageSize: 5 })
+      )
     })
 
     test('should handle negative page number and default to 1', async () => {
@@ -129,7 +133,10 @@ describe('booksController', () => {
 
       await listBooks(req, res, next)
 
-      expect(res.render).toHaveBeenCalledWith('books/index', expect.objectContaining({ totalPages: 3 }))
+      expect(res.render).toHaveBeenCalledWith(
+        'books/index',
+        expect.objectContaining({ totalPages: 3 })
+      )
     })
 
     test('should set totalPages to 1 when total is 0', async () => {
@@ -139,7 +146,10 @@ describe('booksController', () => {
 
       await listBooks(req, res, next)
 
-      expect(res.render).toHaveBeenCalledWith('books/index', expect.objectContaining({ totalPages: 1 }))
+      expect(res.render).toHaveBeenCalledWith(
+        'books/index',
+        expect.objectContaining({ totalPages: 1 })
+      )
     })
 
     test('should include session message and delete it', async () => {
@@ -151,13 +161,17 @@ describe('booksController', () => {
 
       await listBooks(req, res, next)
 
-      expect(res.render).toHaveBeenCalledWith('books/index', expect.objectContaining({
-        message: 'Book added to cart!'
-      }))
+      expect(res.render).toHaveBeenCalledWith(
+        'books/index',
+        expect.objectContaining({
+          message: 'Book added to cart!'
+        })
+      )
       expect(req.session.message).toBeUndefined()
     })
 
     test('should handle errors', async () => {
+      const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => { })
       const error = new Error('Database error')
       mockDb.execute.mockRejectedValueOnce(error)
 
@@ -165,6 +179,7 @@ describe('booksController', () => {
 
       expect(next).toHaveBeenCalledWith(error)
       expect(consoleErrorSpy).toHaveBeenCalledWith('Error in listBooks:', error)
+      consoleErrorSpy.mockRestore()
     })
 
     test('should convert empty string filters to null', async () => {
@@ -176,9 +191,12 @@ describe('booksController', () => {
 
       await listBooks(req, res, next)
 
-      expect(res.render).toHaveBeenCalledWith('books/index', expect.objectContaining({
-        filters: { subject: '', author: '', title: '' }
-      }))
+      expect(res.render).toHaveBeenCalledWith(
+        'books/index',
+        expect.objectContaining({
+          filters: { subject: '', author: '', title: '' }
+        })
+      )
     })
   })
 })

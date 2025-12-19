@@ -2,66 +2,70 @@
 import validator from 'validator'
 
 export function validateLoginInput(email, password) {
-    const errors = []
+  const errors = []
 
-    if (!email) errors.push('Email is required.')
-    if (!password) errors.push('Password is required.')
+  if (!email) {
+    errors.push('Email is required.')
+  }
+  if (!password) {
+    errors.push('Password is required.')
+  }
 
-    return errors
+  return errors
 }
 
 export function validateRegisterInput(data) {
-    const errors = []
-    const { firstName, lastName, address, city, zip, phone, email, password } = data
+  const errors = []
+  const { firstName, lastName, address, city, zip, phone, email, password } = data
 
-    if (!firstName || !lastName) {
-        errors.push('First and last name are required.')
+  if (!firstName || !lastName) {
+    errors.push('First and last name are required.')
+  }
+
+  if (!address || !city) {
+    errors.push('Address and city are required.')
+  }
+
+  // Validate zip code: trim spaces and check if it's only digits
+  if (!zip) {
+    errors.push('Zip code is required.')
+  } else {
+    const cleanZip = zip.toString().replace(/\s/g, '') // Remove all spaces
+    if (!/^\d+$/.test(cleanZip)) {
+      errors.push('Zip code must contain only numbers.')
+    } else if (cleanZip.length !== 5) {
+      errors.push('Zip code must be exactly 5 digits.')
     }
+  }
 
-    if (!address || !city) {
-        errors.push('Address and city are required.')
-    }
+  if (!phone) {
+    errors.push('Phone number is required.')
+  }
 
-    // Validate zip code: trim spaces and check if it's only digits
-    if (!zip) {
-        errors.push('Zip code is required.')
-    } else {
-        const cleanZip = zip.toString().replace(/\s/g, '') // Remove all spaces
-        if (!/^\d+$/.test(cleanZip)) {
-            errors.push('Zip code must contain only numbers.')
-        } else if (cleanZip.length !== 5) {
-            errors.push('Zip code must be exactly 5 digits.')
-        }
-    }
+  if (!email || !validator.isEmail(email)) {
+    errors.push('Invalid email.')
+  }
 
-    if (!phone) {
-        errors.push('Phone number is required.')
-    }
+  if (!password || password.length < 6) {
+    errors.push('Password must be at least 6 characters.')
+  }
 
-    if (!email || !validator.isEmail(email)) {
-        errors.push('Invalid email.')
-    }
-
-    if (!password || password.length < 6) {
-        errors.push('Password must be at least 6 characters.')
-    }
-
-    return errors
+  return errors
 }
 
 export function parsePositiveInteger(value, defaultValue) {
-    const parsed = Number.parseInt(value, 10)
-    return Number.isNaN(parsed) || parsed < 1 ? defaultValue : parsed
+  const parsed = Number.parseInt(value, 10)
+  return Number.isNaN(parsed) || parsed < 1 ? defaultValue : parsed
 }
 
 export function extractFilters(query) {
-    return {
-        subject: query.subject || '',
-        author: query.author || '',
-        title: query.title || ''
-    }
+  return {
+    subject: query.subject || '',
+    author: query.author || '',
+    title: query.title || ''
+  }
 }
 
 export function convertEmptyToNull(value) {
-    return value || null
+  return value || null
 }

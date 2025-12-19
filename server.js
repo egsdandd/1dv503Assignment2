@@ -39,12 +39,14 @@ function configureMiddleware(app, db) {
     next()
   })
 
-  app.use(session({
-    name: process.env.SESSION_NAME || 'connect.sid',
-    secret: process.env.SESSION_SECRET || SESSION_SECRET_FALLBACK,
-    resave: false,
-    saveUninitialized: false
-  }))
+  app.use(
+    session({
+      name: process.env.SESSION_NAME || 'connect.sid',
+      secret: process.env.SESSION_SECRET || SESSION_SECRET_FALLBACK,
+      resave: false,
+      saveUninitialized: false
+    })
+  )
 
   app.use((req, res, next) => {
     res.locals.user = req.session.user || null
@@ -108,7 +110,7 @@ process.on('unhandledRejection', (reason, promise) => {
 })
 
 // Handle uncaught exceptions
-process.on('uncaughtException', (err) => {
+process.on('uncaughtException', err => {
   console.error('Uncaught Exception:', err)
   process.exit(1)
 })

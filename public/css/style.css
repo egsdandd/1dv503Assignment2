@@ -1,7 +1,11 @@
 /* ====== Bas ====== */
 
 body {
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family:
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    sans-serif;
   margin: 0;
   background: #f4f5fb;
   color: #111827;
@@ -40,7 +44,6 @@ a {
 .top-nav .auth-links .link-button:hover {
   color: #bbf7d0;
 }
-
 
 .link-button {
   background: none;
@@ -187,7 +190,6 @@ a {
   margin: 0 auto;
   background: transparent;
 }
-
 
 .books-page h1 {
   font-size: 2rem;

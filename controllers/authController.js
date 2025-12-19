@@ -24,7 +24,11 @@ export async function handleLogin(req, res, next) {
     const errors = validationResult(req)
 
     if (!errors.isEmpty()) {
-      return renderLoginError(res, errors.array().map(e => e.msg), req.body.email || '')
+      return renderLoginError(
+        res,
+        errors.array().map(e => e.msg),
+        req.body.email || ''
+      )
     }
 
     const { email, password } = req.body
@@ -53,7 +57,9 @@ export async function handleLogin(req, res, next) {
 
 export function handleLogout(req, res, next) {
   req.session.destroy(err => {
-    if (err) return next(err)
+    if (err) {
+      return next(err)
+    }
     res.redirect(ROUTES.HOME)
   })
 }

@@ -1,13 +1,11 @@
 // models/booksModel.js
 
-export async function getSubjects (db) {
-  const [rows] = await db.execute(
-    'SELECT DISTINCT subject FROM books ORDER BY subject'
-  )
+export async function getSubjects(db) {
+  const [rows] = await db.execute('SELECT DISTINCT subject FROM books ORDER BY subject')
   return rows.map(r => r.subject)
 }
 
-export async function getBooksPage (db, { subject, author, title, page, pageSize }) {
+export async function getBooksPage(db, { subject, author, title, page, pageSize }) {
   const offset = (page - 1) * pageSize
 
   const conditions = []
@@ -46,8 +44,6 @@ export async function getBooksPage (db, { subject, author, title, page, pageSize
     ORDER BY title
     LIMIT ${limit} OFFSET ${offsetSafe}
   `
-
-
 
   const [rows] = await db.execute(dataSql, params)
 

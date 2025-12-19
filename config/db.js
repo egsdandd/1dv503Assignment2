@@ -13,7 +13,9 @@ export async function createDbConnection() {
       database: process.env.DB_NAME || 'book_store'
     })
 
-    console.log(`✓ Database connected: ${process.env.DB_NAME || 'book_store'}@${process.env.DB_HOST || 'localhost'}`)
+    console.log(
+      `✓ Database connected: ${process.env.DB_NAME || 'book_store'}@${process.env.DB_HOST || 'localhost'}`
+    )
     return connection
   } catch (err) {
     console.error('✗ Database connection failed:', err.message)
