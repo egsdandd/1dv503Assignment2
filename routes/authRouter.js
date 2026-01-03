@@ -25,6 +25,10 @@ authRouter.post(
     body('city').trim().notEmpty().withMessage('City is required.').isLength({ max: 100 }),
     body('zip')
       .trim()
+      .customSanitizer(value => {
+        // Remove all spaces from zip code
+        return typeof value === 'string' ? value.replace(/\s/g, '') : value
+      })
       .isLength({ min: 5, max: 5 })
       .withMessage('Zip code must be exactly 5 digits.')
       .isNumeric()
