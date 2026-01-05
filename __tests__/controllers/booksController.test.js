@@ -4,8 +4,8 @@ import { listBooks } from '../../controllers/booksController.js'
 
 describe('booksController', () => {
   beforeEach(() => {
-    jest.spyOn(console, 'log').mockImplementation(() => { })
-    jest.spyOn(console, 'error').mockImplementation(() => { })
+    jest.spyOn(console, 'log').mockImplementation(() => {})
+    jest.spyOn(console, 'error').mockImplementation(() => {})
   })
 
   afterEach(() => {
@@ -171,7 +171,7 @@ describe('booksController', () => {
     })
 
     test('should handle errors', async () => {
-      const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => { })
+      const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {})
       const error = new Error('Database error')
       mockDb.execute.mockRejectedValueOnce(error)
 
