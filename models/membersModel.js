@@ -7,7 +7,7 @@ export async function createMember(db, data) {
 
   const sql = `
     INSERT INTO members
-      (fname, lname, adress, city, zip, phone, email, password)
+      (fname, lname, address, city, zip, phone, email, password)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?)
   `
   const params = [

@@ -44,7 +44,7 @@ export async function getCartWithUserDetails(db, userId) {
             c.qty,
             b.title,
             b.price,
-            m.adress    AS street,
+            m.address   AS street,
             m.city      AS city,
             m.zip       AS zip
      FROM cart c
